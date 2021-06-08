@@ -99,7 +99,7 @@ namespace ariel {
 
         //operator = deep copy
         BinaryTree &operator=(const BinaryTree &b) {
-            if (this->root != b.root) {
+            if (this!= &b) {
                 if (root)//not empty
                 {
                     // ~BinaryTree<T>();//delete this?
@@ -286,7 +286,7 @@ namespace ariel {
         public:
 
             explicit iterator_inorder(Node *ptr = nullptr) : iterator(ptr) {
-                if (this->get_pointer()) {//move to the right location of the first.
+                if (this->get_pointer()) {//move to the correct location of the first.
                     while (this->get_pointer()->left)//has left
                     {
                         this->get_pointer() = this->get_pointer()->left;//go left
@@ -337,17 +337,57 @@ namespace ariel {
 
         };  // END OF CLASS ITERATOR_INORDER
         class iterator_postorder : public iterator {
+        private:
+            //move to the lowest level from current place
+            void move_down()
+            {
+                if (this->get_pointer()) {
+
+                    while (this->get_pointer()->left||this->get_pointer()->right)//has left
+                    {
+                        if(this->get_pointer()->left)
+                        {
+                            this->get_pointer() = this->get_pointer()->left;//go left
+                        }
+                        else
+                        {
+                            this->get_pointer() = this->get_pointer()->right;//go right
+                        }
+                    }
+                }
+
+
+            }
         public:
 
-            explicit iterator_postorder(Node *ptr = nullptr) : iterator(ptr) {}
+            explicit iterator_postorder(Node *ptr = nullptr) : iterator(ptr) {
+                move_down();//move to the correct location for the first
+
+            }
 
 
             // ++i;
-            virtual iterator_postorder &operator++() {
+            virtual iterator_postorder &operator++()
+            {
 
                 if (this->get_pointer()) {
-                    this->get_pointer() = this->get_pointer()->left;
-                    // return iterator_preorder{nullptr};
+                    if(this->get_pointer()==this->get_root())
+                    {
+                        this->get_pointer()=nullptr;
+                    }
+                    if(this->get_pointer()->_is_left)
+                    {
+                        this->get_pointer()=this->get_pointer()->father;
+                        if( this->get_pointer()->right)
+                        {
+                            this->get_pointer()=this->get_pointer()->right;
+                            move_down();
+                        }
+                    }
+                    else{
+                        this->get_pointer()=this->get_pointer()->father;
+                    }
+
                 }
                 return *this;
 
@@ -357,63 +397,12 @@ namespace ariel {
             // Usually iterators are passed by value and not by const& as they are small.
             virtual iterator_postorder operator++(int) {
                 iterator_postorder tmp = *this;
-                if (this->get_pointer()) {
-                    this->get_pointer() = this->get_pointer()->left;
-                    // return iterator_preorder{nullptr};
-                }
+                ++(*this);
                 return tmp;
 
             }
         };  // END OF CLASS ITERATOR_POSTORDER
-        // class const_iterator_inorder {
 
-        // protected:
-        //     Node *get_pointer();
-
-        // public:
-
-        //     const_iterator_inorder(Node *ptr = nullptr)
-        //             : get_pointer()(ptr) {
-        //     }
-
-        //     // Note that the method is const as this operator does not
-        //     // allow changing of the iterator.
-        //     // Note that it returns T& as it allows to change what it points to.
-        //     // A const_iterator class will return const T&
-        //     // and the method will still be const
-        //     const T &operator*() const {
-        //         //return *get_pointer();
-        //         return get_pointer()->m_value;
-        //     }
-
-        //     const T *operator->() const {
-        //         return &(get_pointer()->m_value);
-        //     }
-
-
-        //     // ++i;
-        //     const const_iterator_inorder &operator++() {
-        //         //++get_pointer();
-        //         this->get_pointer() = this->get_pointer()->m_next;
-        //         return *this;
-        //     }
-
-        //     // i++;
-        //     // Usually iterators are passed by value and not by const& as they are small.
-        //     const const_iterator_inorder operator++(int) {
-        //         const_iterator_inorder tmp = *this;
-        //         this->get_pointer() = this->get_pointer()->m_next;
-        //         return tmp;
-        //     }
-
-        //     bool operator==(const iterator &rhs) const {
-        //         return get_pointer() == rhs.get_pointer();
-        //     }
-
-        //     bool operator!=(const iterator &rhs) const {
-        //         return get_pointer() != rhs.get_pointer();
-        //     }
-        // };  // END OF CLASS ITERATOR
 
         iterator_preorder begin_preorder() {
             return iterator_preorder{root};
