@@ -187,16 +187,16 @@ namespace ariel {
             space += height;
             // print right child first
             cout_tree(output, root->right, space);
-            output << endl;
+            output << std::endl;
             // print the current node after padding with spaces
             mul_space_stream(output, space - height);
-            output << "    |" << endl;
+            output << "    |" << std::endl;
             mul_space_stream(output, space - height);
-            cout << root->val << " ---" << endl;
+            output << root->val << " ---" << std::endl;
             mul_space_stream(output, space - height);
-            output << "    |" << endl;
+            output << "    |" << std::endl;
             // print left child
-            output << endl;
+            output << std::endl;
             cout_tree(output, root->left, space);
         }
 
