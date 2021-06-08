@@ -99,7 +99,7 @@ namespace ariel {
 
         //operator = deep copy
         BinaryTree &operator=(const BinaryTree &b) {
-            if (this!= &b) {
+            if (this->root != b.root) {
                 if (root)//not empty
                 {
                     // ~BinaryTree<T>();//delete this?
@@ -375,7 +375,7 @@ namespace ariel {
                     {
                         this->get_pointer()=nullptr;
                     }
-                    if(this->get_pointer()->_is_left)
+                    else if(this->get_pointer()->_is_left)
                     {
                         this->get_pointer()=this->get_pointer()->father;
                         if( this->get_pointer()->right)
