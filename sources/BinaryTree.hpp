@@ -170,6 +170,13 @@ namespace ariel {
         // inner class and methods that return instances of it)
         //-------------------------------------------------------------------
         class iterator {
+        struct iterator_traits<iterator> {
+            typedef ptrdiff_t          difference_type=ptrdiff_t;
+            typedef char               value_type=T;
+            typedef char*              pointer=T*;
+            typedef char&              reference=T&;
+            typedef input_iterator_tag iterator_category=std::forward_iterator_tag;
+        };
 
         protected:
             Node *pointer_to_current_node;
