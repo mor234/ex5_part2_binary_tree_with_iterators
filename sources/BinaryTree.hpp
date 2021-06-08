@@ -177,8 +177,9 @@ namespace ariel {
                 output << ' ';
             }
         }
-
-        void cout_tree(std::ostream &output, const Node *root, int space = 0, int height = 5) const {
+        static const int NUM_OF_SPACES=5;
+        //partly based on: https://www.techiedelight.com/print-two-dimensional-view-binary-tree/   
+        void cout_tree(std::ostream &output, const Node *root, int space = 0, int height = NUM_OF_SPACES) const {
             // Base case
             if (root == nullptr) {
                 return;
