@@ -198,6 +198,7 @@ namespace ariel {
             const Node *root;
 
         public:
+
             const Node *&get_root() {
                 return root;
             }
@@ -315,11 +316,11 @@ namespace ariel {
                         do {
                             is_left = this->get_pointer()->_is_left;
                             this->get_pointer() = this->get_pointer()->father;
-                        } while (!is_left&&this->get_root()!=this->get_pointer());
-                        if (!is_left)//didn't finish because skipped left
-                        {
-                            this->get_pointer()=nullptr;
-                        }
+                        } while (this->get_pointer()&&!is_left/*&&this->get_root()!=this->get_pointer()*/);
+//                        if (!is_left)//didn't finish because skipped left
+//                        {
+//                            this->get_pointer()=nullptr;
+//                        }
 
                     }
                 }
@@ -333,6 +334,22 @@ namespace ariel {
                 ++(*this);
                 return tmp;
             }
+            // T &operator*() const {
+            //     //return *pointer_to_current_node;
+            //     return this->get_pointer()->val;
+            // }
+
+            // T *operator->() const {
+            //     return &(this->get_pointer()->val);
+            // }
+
+            // bool operator==(const iterator_inorder &rhs) const {
+            //     return this->get_pointer() == rhs.get_pointer();
+            // }
+
+            // bool operator!=(const iterator_inorder &rhs) const {
+            //     return this->get_pointer() != rhs.get_pointer();
+            // }
 
 
         };  // END OF CLASS ITERATOR_INORDER
