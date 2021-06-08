@@ -280,46 +280,51 @@ namespace ariel {
 
         public:
 
-            explicit iterator_inorder(Node *ptr = nullptr) : iterator(ptr) {}
+            explicit iterator_inorder(Node *ptr = nullptr) : iterator(ptr) {
+                if (this->pointer_to_current_node) {//move to the right location of the first.
+                    while (this->pointer_to_current_node->left)//has left
+                    {
+                        this->pointer_to_current_node = this->pointer_to_current_node->left;//go left
+                    }
+                }
+            }
 
 
             // ++i;
+            //https://www.cs.odu.edu/~zeil/cs361/latest/Public/treetraversal/index.html
             iterator_inorder &operator++() {
 
-                if (this->pointer_to_current_node)//if not nullptr
+                if (this->pointer_to_current_node)//not end
                 {
-                    if (this->pointer_to_current_node == this->root) {
-                        while (this->pointer_to_current_node->left)//has left
-                        {
+                   if (this->pointer_to_current_node->right)//has right
+                    {
+                        //move one step right
+                        this->pointer_to_current_node = this->pointer_to_current_node->right;
+                        //move left as much as possibale
+                        while (this->pointer_to_current_node->left) {
                             this->pointer_to_current_node = this->pointer_to_current_node->left;
                         }
-                    } else if (this->pointer_to_current_node->_is_left)//if left son
-                    {
-                        this->pointer_to_current_node = this->pointer_to_current_node->father;//go to father
-                        if (this->pointer_to_current_node->right)//if has right son
-                        {
-                            this->pointer_to_current_node = this->pointer_to_current_node->right;//go right
-                            while (this->pointer_to_current_node->left)//has left
-                            {
-                                this->pointer_to_current_node = this->pointer_to_current_node->left;//go left
-                            }
+                    } else {
+                        //move up, skiped one left step
+                        bool is_left;
+                        do {
+                            is_left = this->pointer_to_current_node->_is_left;
+                            this->pointer_to_current_node = this->pointer_to_current_node->father;
+                        } while (!is_left);
+                        if (root==this->pointer_to_current_node){
+                            this->pointer_to_current_node=nullptr;
                         }
 
-                    } else {
-                        this->pointer_to_current_node = this->pointer_to_current_node->father;//go to father
                     }
                 }
-
+                return *this;
             }
 
             // i++;
             // Usually iterators are passed by value and not by const& as they are small.
             virtual iterator_inorder operator++(int) {
                 iterator_inorder tmp = *this;
-                if (this->pointer_to_current_node) {
-                    this->pointer_to_current_node = this->pointer_to_current_node->left;
-                    // return iterator_preorder{nullptr};
-                }
+                ++(*this);
                 return tmp;
             }
 
