@@ -99,7 +99,7 @@ namespace ariel {
 
         //operator = deep copy
         BinaryTree &operator=(const BinaryTree &b) {
-            if (this->root != b.root) {
+            if (this!=&b) {
                 if (root)//not empty
                 {
                     // ~BinaryTree<T>();//delete this?
