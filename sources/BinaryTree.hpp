@@ -311,7 +311,7 @@ namespace ariel {
                             is_left = this->pointer_to_current_node->_is_left;
                             this->pointer_to_current_node = this->pointer_to_current_node->father;
                         } while (!is_left);
-                        if (root==this->pointer_to_current_node){
+                        if (this->root==this->pointer_to_current_node){
                             this->pointer_to_current_node=nullptr;
                         }
 
