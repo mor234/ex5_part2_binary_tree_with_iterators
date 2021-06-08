@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iterator> // For std::forward_iterator_tag
-#include <cstddef>  // For std::ptrdiff_t
 #include <iostream>
 #include <algorithm>
 
@@ -89,7 +87,7 @@ namespace ariel {
         BinaryTree &operator=(BinaryTree &&other) noexcept {
             if (this->root != other.root) {
                 if (root) {
-                    // delete *this;
+                    delete_tree(root);
                 }
                 root = other.root;
                 other.root = nullptr;
@@ -99,10 +97,10 @@ namespace ariel {
 
         //operator = deep copy
         BinaryTree &operator=(const BinaryTree &b) {
-            if (this!=&b) {
+            if (this != &b) {
                 if (root)//not empty
                 {
-                    // ~BinaryTree<T>();//delete this?
+                    delete_tree(root);
                 }
                 root = nullptr;
                 if (b.root == nullptr) {
@@ -173,11 +171,43 @@ namespace ariel {
             return *this;
         }
 
+    private:
+        void mul_space_stream(std::ostream &output, int num_char) const {
+            for (int i = 0; i < num_char; i++) {
+                output << ' ';
+            }
+        }
+
+        void cout_tree(std::ostream &output, const Node *root, int space = 0, int height = 5) const {
+            // Base case
+            if (root == nullptr) {
+                return;
+            }
+            // increase distance between levels
+            space += height;
+            // print right child first
+            cout_tree(output, root->right, space);
+            output << endl;
+            // print the current node after padding with spaces
+            mul_space_stream(output, space - height);
+            output << "    |" << endl;
+            mul_space_stream(output, space - height);
+            cout << root->val << " ---" << endl;
+            mul_space_stream(output, space - height);
+            output << "    |" << endl;
+            // print left child
+            output << endl;
+            cout_tree(output, root->left, space);
+        }
+
+    public:
+
         //----------------------------------
         // friend global IO operators
         //----------------------------------
         friend std::ostream &operator<<(std::ostream &output, const BinaryTree &binary_tree) {
-            return (output << "hello");
+            binary_tree.cout_tree(output, binary_tree.root);
+            return output;
         }
 
 
@@ -187,11 +217,6 @@ namespace ariel {
         //-------------------------------------------------------------------
         class iterator {
 
-//            using iterator_category = std::forward_iterator_tag;
-//            using difference_type = std::ptrdiff_t;
-//            using value_type = T;
-//            using pointer = T *;  // or also value_type*
-//            using reference = T &;  // or also value_type&
 
         private:
             Node *pointer_to_current_node;
@@ -238,14 +263,13 @@ namespace ariel {
         class iterator_preorder : public iterator {
         public:
             explicit iterator_preorder(Node *ptr = nullptr) : iterator(ptr) {}
-
             // ++i;
-            virtual iterator_preorder operator++() {
+            iterator_preorder operator++() {
                 if (this->get_pointer())//if not nullptr
                 {
                     if (this->get_pointer()->left)//if has left
                     {
-                        this->get_pointer()= this->get_pointer()->left;
+                        this->get_pointer() = this->get_pointer()->left;
 
                     } else if (this->get_pointer()->right)//if has
                     {
@@ -255,37 +279,28 @@ namespace ariel {
                     {
                         while (this->get_pointer() != this->get_root()) {//while left son
                             bool is_left = this->get_pointer()->_is_left;
-                            this-> get_pointer()= this->get_pointer()->father;
+                            this->get_pointer() = this->get_pointer()->father;
                             if (is_left && this->get_pointer()->right) {
                                 this->get_pointer() = this->get_pointer()->right;
                                 return *this;
                             }
                         }
-
                         this->get_pointer() = nullptr;
-
-
                     }
                 }
                 return *this;
-
             }
-
-
             // i++;
             // Usually iterators are passed by value and not by const& as they are small.
-            virtual iterator_preorder operator++(int) {
+            iterator_preorder operator++(int) {
                 iterator_preorder tmp = *this;
                 ++(*this);
                 return tmp;
             }
-
-
         };  // END OF CLASS ITERATOR_PREORDER
+
         class iterator_inorder : public iterator {
-
         public:
-
             explicit iterator_inorder(Node *ptr = nullptr) : iterator(ptr) {
                 if (this->get_pointer()) {//move to the correct location of the first.
                     while (this->get_pointer()->left)//has left
@@ -294,12 +309,9 @@ namespace ariel {
                     }
                 }
             }
-
-
             // ++i;
             //https://www.cs.odu.edu/~zeil/cs361/latest/Public/treetraversal/index.html
             iterator_inorder &operator++() {
-
                 if (this->get_pointer())//not end
                 {
                     if (this->get_pointer()->right)//has right
@@ -312,15 +324,11 @@ namespace ariel {
                         }
                     } else {
                         //move up, skiped one left step
-                        bool is_left=false;
+                        bool is_left = false;
                         do {
                             is_left = this->get_pointer()->_is_left;
                             this->get_pointer() = this->get_pointer()->father;
-                        } while (this->get_pointer()&&!is_left/*&&this->get_root()!=this->get_pointer()*/);
-//                        if (!is_left)//didn't finish because skipped left
-//                        {
-//                            this->get_pointer()=nullptr;
-//                        }
+                        } while (this->get_pointer() && !is_left);
 
                     }
                 }
@@ -329,45 +337,23 @@ namespace ariel {
 
             // i++;
             // Usually iterators are passed by value and not by const& as they are small.
-            virtual iterator_inorder operator++(int) {
+            iterator_inorder operator++(int) {
                 iterator_inorder tmp = *this;
                 ++(*this);
                 return tmp;
             }
-            // T &operator*() const {
-            //     //return *pointer_to_current_node;
-            //     return this->get_pointer()->val;
-            // }
-
-            // T *operator->() const {
-            //     return &(this->get_pointer()->val);
-            // }
-
-            // bool operator==(const iterator_inorder &rhs) const {
-            //     return this->get_pointer() == rhs.get_pointer();
-            // }
-
-            // bool operator!=(const iterator_inorder &rhs) const {
-            //     return this->get_pointer() != rhs.get_pointer();
-            // }
-
-
         };  // END OF CLASS ITERATOR_INORDER
         class iterator_postorder : public iterator {
         private:
             //move to the lowest level from current place
-            void move_down()
-            {
+            void move_down() {
                 if (this->get_pointer()) {
 
-                    while (this->get_pointer()->left||this->get_pointer()->right)//has left
+                    while (this->get_pointer()->left || this->get_pointer()->right)//has left
                     {
-                        if(this->get_pointer()->left)
-                        {
+                        if (this->get_pointer()->left) {
                             this->get_pointer() = this->get_pointer()->left;//go left
-                        }
-                        else
-                        {
+                        } else {
                             this->get_pointer() = this->get_pointer()->right;//go right
                         }
                     }
@@ -375,6 +361,7 @@ namespace ariel {
 
 
             }
+
         public:
 
             explicit iterator_postorder(Node *ptr = nullptr) : iterator(ptr) {
@@ -384,25 +371,21 @@ namespace ariel {
 
 
             // ++i;
-            virtual iterator_postorder &operator++()
-            {
+            iterator_postorder &operator++() {
 
                 if (this->get_pointer()) {
-                    if(this->get_pointer()==this->get_root())
+                    if (this->get_pointer() == this->get_root())//if in root- finished going throw the tree.
                     {
-                        this->get_pointer()=nullptr;
-                    }
-                    else if(this->get_pointer()->_is_left)
+                        this->get_pointer() = nullptr;
+                    } else if (this->get_pointer()->_is_left)//
                     {
-                        this->get_pointer()=this->get_pointer()->father;
-                        if( this->get_pointer()->right)
-                        {
-                            this->get_pointer()=this->get_pointer()->right;
+                        this->get_pointer() = this->get_pointer()->father;
+                        if (this->get_pointer()->right) {
+                            this->get_pointer() = this->get_pointer()->right;
                             move_down();
                         }
-                    }
-                    else{
-                        this->get_pointer()=this->get_pointer()->father;
+                    } else {
+                        this->get_pointer() = this->get_pointer()->father;
                     }
 
                 }
@@ -412,7 +395,7 @@ namespace ariel {
 
             // i++;
             // Usually iterators are passed by value and not by const& as they are small.
-            virtual iterator_postorder operator++(int) {
+            iterator_postorder operator++(int) {
                 iterator_postorder tmp = *this;
                 ++(*this);
                 return tmp;
@@ -420,7 +403,9 @@ namespace ariel {
             }
         };  // END OF CLASS ITERATOR_POSTORDER
 
-
+        /*******************
+         --- Iterators: ----
+         ******************/
         iterator_preorder begin_preorder() {
             return iterator_preorder{root};
         }
@@ -452,9 +437,5 @@ namespace ariel {
         iterator_postorder end_postorder() {
             return iterator_postorder{nullptr};
         }
-
-
-
-
     };
 }
