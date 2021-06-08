@@ -127,8 +127,8 @@ namespace ariel {
         BinaryTree<T> &add_left(const T &val_father, const T &val) {
             // auto itr = std::find(begin(), end(), val_father);
             auto itr = begin_preorder();
-            auto end=end_preorder();
-            for (; itr !=end ; ++itr) {
+            auto end = end_preorder();
+            for (; itr != end; ++itr) {
                 if (*itr == val_father) {
                     break;
                 }
@@ -151,7 +151,7 @@ namespace ariel {
         BinaryTree<T> &add_right(const T &val_father, const T &val) {
             // auto itr = std::find(begin(), end(), val_father);
             auto itr = begin_preorder();
-            auto end=end_preorder();
+            auto end = end_preorder();
 
             for (; itr != end; ++itr) {
                 if (*itr == val_father) {
@@ -247,10 +247,10 @@ namespace ariel {
 
                     } else//doesn't have sons
                     {
-                        while (this->pointer_to_current_node!=this->root) {//while left son
-                            bool is_left=this->pointer_to_current_node->_is_left;
+                        while (this->pointer_to_current_node != this->root) {//while left son
+                            bool is_left = this->pointer_to_current_node->_is_left;
                             this->pointer_to_current_node = this->pointer_to_current_node->father;
-                            if (is_left&&this->pointer_to_current_node->right) {
+                            if (is_left && this->pointer_to_current_node->right) {
                                 this->pointer_to_current_node = this->pointer_to_current_node->right;
                                 return *this;
                             }
@@ -284,13 +284,32 @@ namespace ariel {
 
 
             // ++i;
-            virtual iterator_inorder &operator++() {
+            iterator_inorder &operator++() {
 
-                if (this->pointer_to_current_node) {
-                    this->pointer_to_current_node = this->pointer_to_current_node->left;
-                    // return iterator_preorder{nullptr};
+                if (this->pointer_to_current_node)//if not nullptr
+                {
+                    if (this->pointer_to_current_node == this->root) {
+                        while (this->pointer_to_current_node->left)//has left
+                        {
+                            this->pointer_to_current_node = this->pointer_to_current_node->left;
+                        }
+                    } else if (this->pointer_to_current_node->_is_left)//if left son
+                    {
+                        this->pointer_to_current_node = this->pointer_to_current_node->father;//go to father
+                        if (this->pointer_to_current_node->right)//if has right son
+                        {
+                            this->pointer_to_current_node = this->pointer_to_current_node->right;//go right
+                            while (this->pointer_to_current_node->left)//has left
+                            {
+                                this->pointer_to_current_node = this->pointer_to_current_node->left;//go left
+                            }
+                        }
+
+                    } else {
+                        this->pointer_to_current_node = this->pointer_to_current_node->father;//go to father
+                    }
                 }
-                return *this;
+
             }
 
             // i++;
